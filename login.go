@@ -7,6 +7,7 @@ import (
 )
 
 type (
+	// Account is a response body about current user account.
 	Account struct {
 		UserID            string `json:"user_id"`
 		UserName          string `json:"user_name"`
@@ -25,6 +26,7 @@ type (
 		Application       string `json:"app"`
 	}
 
+	// Data is a part Account response body about current user account.
 	Data struct {
 		UserID            string `json:"user_id"`
 		UserName          string `json:"user_name"`
@@ -43,7 +45,7 @@ type (
 )
 
 // LoginByCredentials used for authentication by user login and password.
-func (app Application) LoginByCredentials(login UserName, pass string) (Account, error) {
+func LoginByCredentials(login UserName, pass string, app Application) (Account, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("login", login.UserName)
 	args.Add("pass", pass)
@@ -60,7 +62,7 @@ func (app Application) LoginByCredentials(login UserName, pass string) (Account,
 }
 
 // LoginByToken used for authentication by user token.
-func (app Application) LoginByToken(token Token) (Account, error) {
+func LoginByToken(token Token, app Application) (Account, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("app", app.Name)
 	args.Add("authToken", token.Token)

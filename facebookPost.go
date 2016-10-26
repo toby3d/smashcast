@@ -7,7 +7,7 @@ import (
 )
 
 // FacebookPost send Facebook Post to enabled facebook pages.
-func (token Token) FacebookPost(userName UserName, message string) (Status, error) {
+func FacebookPost(userName UserName, message string, token Token) (Status, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("user_name", userName.UserName)
 	args.Add("authToken", token.Token)

@@ -10,17 +10,20 @@ import (
 )
 
 type (
+	// ListRequest is filters for searching by game categories.
 	ListRequest struct {
 		Query    string
 		Limit    int
 		LiveOnly bool
 	}
 
+	// ListGames is a response body about find games categories.
 	ListGames struct {
 		Request    Request    `json:"request"`
 		Categories []Category `json:"categories"`
 	}
 
+	// Category is a game category information.
 	Category struct {
 		ID         string    `json:"category_id"`
 		Name       string    `json:"category_name"`
@@ -38,13 +41,20 @@ type (
 // GetListGames returns a list games sorted by the number of viewers.
 func GetListGames(req ListRequest) (ListGames, error) {
 	var args fasthttp.Args
+
+	// Search keyword for category_name.
 	if req.Query != "" {
-		args.Add("q", req.Query) // Search keyword for `category_name`.
+		args.Add("q", req.Query)
 	}
+
+	// Maximum number of objects to fetch. Default and maximum is 100.
 	if req.Limit > 0 && req.Limit <= 100 {
-		args.Add("limit", strconv.Itoa(req.Limit)) // Maximum number of objects to fetch. Default and maximum is 100.
+		args.Add("limit", strconv.Itoa(req.Limit))
 	}
-	args.Add("liveonly", strconv.FormatBool(req.LiveOnly)) // Return only games that have live channels.
+
+	// Return only games that have live channels.
+	args.Add("liveonly", strconv.FormatBool(req.LiveOnly))
+
 	requestURL := fmt.Sprintf("%s/games?%s", API, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

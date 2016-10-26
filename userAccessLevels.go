@@ -7,6 +7,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// Access is a list about user access levels.
 type Access struct {
 	UserID        string `json:"user_id"`
 	AccessUserID  string `json:"access_user_id"`
@@ -31,8 +32,8 @@ type Access struct {
 	IsFollower    bool   `json:"isFollower"`
 }
 
-// UserAccessLevels return access levels that `authToken` has in `channel`.
-func (token Token) UserAccessLevels(channel string) (Access, error) {
+// UserAccessLevels return access levels that authToken has in channel.
+func UserAccessLevels(channel string, token Token) (Access, error) {
 	requestURL := fmt.Sprintf("%s /user/access/%s/%s", API, channel, token.Token)
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

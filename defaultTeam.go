@@ -8,8 +8,8 @@ import (
 	"strconv"
 )
 
-// DefaultTeam sets default team by `groupID`.
-func (token Token) DefaultTeam(user UserName, groupID int) (Status, error) {
+// DefaultTeam sets default team by groupID.
+func DefaultTeam(user UserName, groupID int, token Token) (Status, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("authToken", token.Token)
 	args.Add("group_id", strconv.Itoa(groupID))

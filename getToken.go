@@ -6,12 +6,13 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// AuthToken is a Users Authentication Token
 type AuthToken struct {
 	Token `json:"authToken"`
 }
 
 // GetToken get an authentication token rather than account information.
-func (app Application) GetToken(login string, pass string) (AuthToken, error) {
+func GetToken(login string, pass string, app Application) (AuthToken, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("login", login)
 	args.Add("pass", pass)

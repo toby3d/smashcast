@@ -8,19 +8,24 @@ import (
 )
 
 type (
+	// HostersList is a response body about hosters.
 	HostersList struct {
-		Hosters []Hosters `json:"hosters"`
+		Hosters []Hoster `json:"hosters"`
 	}
 
-	Hosters struct {
-		UserName string `json:"user_name"`
+	// Hoster is a single list item about hoster.
+	Hoster struct {
+		UserName
 		UserLogo string `json:"user_logo"`
 	}
 )
 
 // GetHosters returns channel hosters.
-// When a user isn’t found, this API returns a regular response but with all values containing `null`.
-func (token Token) GetHosters(channel string) (HostersList, error) {
+//
+// When a user isn’t found, this API returns a regular response but with all values containing null.
+//
+// Editors can read this API.
+func GetHosters(channel string, token Token) (HostersList, error) {
 	var args fasthttp.Args
 	args.Add("authToken", token.Token)
 	requestURL := fmt.Sprintf("%s/hosters/%s?%s", API, channel, args.String())

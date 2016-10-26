@@ -6,6 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// Ingest is a single list element about streaming server for programs.
 type Ingest struct {
 	Location string `json:"ingest_location"`
 	URL      string `json:"ingest_url"`

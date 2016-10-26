@@ -7,12 +7,13 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// StreamKey is a key for authenticate streaming programm.
 type StreamKey struct {
 	StreamKey string `json:"streamKey"`
 }
 
-// GetStreamKey get the stream key for `channel`.
-func (token Token) GetStreamKey(channel string) (StreamKey, error) {
+// GetStreamKey get the stream key for channel.
+func GetStreamKey(channel string, token Token) (StreamKey, error) {
 	var args fasthttp.Args
 	args.Add("authToken", token.Token)
 	requestURL := fmt.Sprintf("%s/mediakey/%s?%s", API, channel, args.String())

@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// User contains information about user.
 type User struct {
 	Followers       string    `json:"followers,ommitempty"`
 	IsLive          string    `json:"is_live,ommitempty"`
@@ -35,10 +36,16 @@ type User struct {
 }
 
 // GetUserObject return information about user.
-// When a user isn’t found, this API returns a regular response but with all values containing `null`.
-func (token Token) GetUserObject(userName UserName) (User, error) {
+//
+// When a user isn’t found, this API returns a regular response but with all values containing null.
+func GetUserObject(userName UserName, token Token) (User, error) {
 	var args fasthttp.Args
-	args.Add("authToken", token.Token)
+
+	// Returns private user details.
+	if len(token) > 0 {
+		args.Add("authToken", token.Token)
+	}
+
 	requestURL := fmt.Sprintf("%s/user/%s?%s", API, userName.UserName, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

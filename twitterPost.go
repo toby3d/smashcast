@@ -7,7 +7,7 @@ import (
 )
 
 // TwitterPost send Tweet To Twitter.
-func (token Token) TwitterPost(userName UserName, message string) (Status, error) {
+func TwitterPost(userName UserName, message string, token Token) (Status, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("user_name", userName.UserName)
 	args.Add("authToken", token.Token)

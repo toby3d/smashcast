@@ -8,16 +8,15 @@ import (
 )
 
 type (
+	// VerifiedStatus is a response body.
 	VerifiedStatus struct {
-		Request VerifiedRequest `json:"request"`
-		User    VerifiedUser    `json:"user"`
+		Request `json:"request"`
+		User    VerifiedUser `json:"user"`
 	}
 
-	VerifiedRequest struct {
-		This string `json:"this"`
-	}
-
+	// VerifiedUser show information about user activating status.
 	VerifiedUser struct {
+		// If user object is empty or user_activated property is 0, the user hasn’t verified their email address.
 		UserActivated string `json:"user_activated"`
 	}
 )

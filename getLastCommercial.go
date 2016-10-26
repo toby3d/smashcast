@@ -7,13 +7,14 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// LastCommercial is a response body about last commercial.
 type LastCommercial struct {
 	SecondsAgo string `json:"seconds_ago"`
 	AdCount    string `json:"ad_count"`
 	TimeOut    int64  `json:"timeout"`
 }
 
-// GetLastCommercial checks if the Token is valid.
+// GetLastCommercial returns last commercial break object.
 func GetLastCommercial(channel string) (LastCommercial, error) {
 	requestURL := fmt.Sprintf("%s/ws/combreak/%s", API, channel)
 	_, body, err := fasthttp.Get(nil, requestURL)
