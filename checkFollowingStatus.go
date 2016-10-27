@@ -10,11 +10,11 @@ import (
 type (
 	// FollowingStatus is a response body.
 	FollowingStatus struct {
-		Following Following `json:"following"`
+		Following Follower `json:"following"`
 	}
 
-	// Following show information about following status.
-	Following struct {
+	// Follower show information about following status.
+	Follower struct {
 		FollowID       string `json:"follow_id"`
 		FollowerUserID string `json:"follower_user_id"`
 
@@ -25,7 +25,9 @@ type (
 
 // CheckFollowingStatus returns follower relationship from userName to channel.
 func CheckFollowingStatus(userName UserName, channel string) (FollowingStatus, error) {
-	requestURL := fmt.Sprintf("%s/following/user/%s?user_name=%s", API, channel, userName.UserName)
+	var args fasthttp.Args
+	args.Add("user_name", userName.UserName)
+	requestURL := fmt.Sprintf("%s/following/user/%s?%s", API, channel, args.String())
 	_, resp, err := fasthttp.Get(nil, requestURL)
 	if err != nil {
 		return FollowingStatus{}, err

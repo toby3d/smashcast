@@ -42,9 +42,7 @@ func GetUserObject(userName UserName, token Token) (User, error) {
 	var args fasthttp.Args
 
 	// Returns private user details.
-	if len(token) > 0 {
-		args.Add("authToken", token.Token)
-	}
+	args.Add("authToken", token.Token)
 
 	requestURL := fmt.Sprintf("%s/user/%s?%s", API, userName.UserName, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)

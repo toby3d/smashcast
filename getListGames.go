@@ -12,8 +12,13 @@ import (
 type (
 	// ListRequest is filters for searching by game categories.
 	ListRequest struct {
-		Query    string
-		Limit    int
+		// Search keyword for category_name.
+		Query string
+
+		// Maximum number of objects to fetch. Default and maximum is 100.
+		Limit int
+
+		// Return only games that have live channels.
 		LiveOnly bool
 	}
 
@@ -41,18 +46,12 @@ type (
 // GetListGames returns a list games sorted by the number of viewers.
 func GetListGames(req ListRequest) (ListGames, error) {
 	var args fasthttp.Args
-
-	// Search keyword for category_name.
 	if req.Query != "" {
 		args.Add("q", req.Query)
 	}
-
-	// Maximum number of objects to fetch. Default and maximum is 100.
 	if req.Limit > 0 && req.Limit <= 100 {
 		args.Add("limit", strconv.Itoa(req.Limit))
 	}
-
-	// Return only games that have live channels.
 	args.Add("liveonly", strconv.FormatBool(req.LiveOnly))
 
 	requestURL := fmt.Sprintf("%s/games?%s", API, args.String())
