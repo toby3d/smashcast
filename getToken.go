@@ -11,13 +11,13 @@ type AuthToken struct {
 	Token `json:"authToken"`
 }
 
-// GetToken get an authentication token rather than account information.
+// GetToken get an authentication authToken rather than account information.
 func GetToken(login string, pass string, app Application) (AuthToken, error) {
 	args := fasthttp.AcquireArgs()
 	args.Add("login", login)
 	args.Add("pass", pass)
 	args.Add("app", app.Name)
-	statusCode, body, err := fasthttp.Post(nil, API+"/auth/token", args)
+	statusCode, body, err := fasthttp.Post(nil, API+"/auth/authToken", args)
 	if statusCode != 200 || err != nil {
 		return AuthToken{}, err
 	}

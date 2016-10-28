@@ -7,6 +7,13 @@ import (
 )
 
 type (
+	Credentials struct {
+		Login    string
+		Password string
+		App      string
+		AuthToken
+	}
+
 	// Account is a response body about current user account.
 	Account struct {
 		UserID            string `json:"user_id"`
@@ -14,7 +21,7 @@ type (
 		UserLogo          string `json:"user_logo"`
 		UserLogoSmall     string `json:"user_logo_small"`
 		UserBanned        string `json:"user_banned"`
-		UserPartner       string `json:"user_partner,ommitempty"`
+		UserPartner       string `json:"user_partner,omitempty"`
 		UserBannedChannel string `json:"user_banned_channel"`
 		SuperAdmin        string `json:"superadmin"`
 		LivestreamCount   string `json:"livestream_count"`
@@ -33,7 +40,7 @@ type (
 		UserLogo          string `json:"user_logo"`
 		UserLogoSmall     string `json:"user_logo_small"`
 		UserBanned        string `json:"user_banned"`
-		UserPartner       string `json:"user_partner,ommitempty"`
+		UserPartner       string `json:"user_partner,omitempty"`
 		UserBannedChannel string `json:"user_banned_channel"`
 		SuperAdmin        string `json:"superadmin"`
 		LivestreamCount   string `json:"livestream_count"`
@@ -44,28 +51,13 @@ type (
 	}
 )
 
-// LoginByCredentials used for authentication by user login and password.
-func LoginByCredentials(login UserName, pass string, app Application) (Account, error) {
+// Login used for authentication by user login and password.
+func Login(req Credentials) (Account, error) {
 	args := fasthttp.AcquireArgs()
-	args.Add("login", login.UserName)
-	args.Add("pass", pass)
-	args.Add("app", app.Name)
-	statusCode, body, err := fasthttp.Post(nil, API+"/auth/login", args)
-	if statusCode != 200 || err != nil {
-		return Account{}, err
-	}
-	var obj Account
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return Account{}, err
-	}
-	return obj, nil
-}
-
-// LoginByToken used for authentication by user token.
-func LoginByToken(token Token, app Application) (Account, error) {
-	args := fasthttp.AcquireArgs()
-	args.Add("app", app.Name)
-	args.Add("authToken", token.Token)
+	args.Add("login", req.Login)
+	args.Add("pass", req.Password)
+	args.Add("app", req.App)
+	args.Add("authToken", req.AuthToken.Token)
 	statusCode, body, err := fasthttp.Post(nil, API+"/auth/login", args)
 	if statusCode != 200 || err != nil {
 		return Account{}, err

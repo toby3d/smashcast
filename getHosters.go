@@ -25,9 +25,9 @@ type (
 // When a user isn’t found, this API returns a regular response but with all values containing null.
 //
 // Editors can read this API.
-func GetHosters(channel string, token Token) (HostersList, error) {
+func GetHosters(channel string, authToken AuthToken) (HostersList, error) {
 	var args fasthttp.Args
-	args.Add("authToken", token.Token)
+	args.Add("authToken", authToken.Token)
 	requestURL := fmt.Sprintf("%s/hosters/%s?%s", API, channel, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

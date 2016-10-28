@@ -7,20 +7,20 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// AccessToken is the equivalent of a regular authToken. You are now able to use this on the hitbox API just like any other token.
+// AccessToken is the equivalent of a regular authToken. You are now able to use this on the hitbox API just like any other authToken.
 type AccessToken struct {
-	Token `json:"acces_token"`
+	Token `json:"access_authToken"`
 }
 
-// Exchange get an authentication token rather than account information.
+// Exchange get an authentication authToken rather than account information.
 //
-// The hash value is a Base64 encode of the app.Token and app.Secret. As an example, you can open up the Chrome/Firefox Developer Tool, go to the console and type btoa("app_token"+"app_secret"); and the result would be your hash.
+// The hash value is a Base64 encode of the app.Token and app.Secret. As an example, you can open up the Chrome/Firefox Developer Tool, go to the console and type btoa("app_authToken"+"app_secret"); and the result would be your hash.
 func Exchange(requestToken string, app Application) (AccessToken, error) {
 	hash := base64.StdEncoding.EncodeToString([]byte(app.Token + app.Secret))
 
 	args := fasthttp.AcquireArgs()
-	args.Add("request_token", requestToken)
-	args.Add("app_token", app.Token)
+	args.Add("request_authToken", requestToken)
+	args.Add("app_authToken", app.Token)
 	args.Add("hash", hash)
 	statusCode, body, err := fasthttp.Post(nil, API+"/oauth/exchange", args)
 	if statusCode != 200 || err != nil {

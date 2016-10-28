@@ -9,12 +9,12 @@ import (
 
 // UserName is a hitbox Username.
 type UserName struct {
-	UserName string `json:"user_name,ommitempty"`
+	UserName string `json:"user_name,omitempty"`
 }
 
 // GetUserFromToken returns user associated with authToken.
-func GetUserFromToken(token Token) (UserName, error) {
-	requestURL := fmt.Sprintf("%s/userfromtoken/%s", API, token.Token)
+func GetUserFromToken(authToken AuthToken) (UserName, error) {
+	requestURL := fmt.Sprintf("%s/userfromauthToken/%s", API, authToken.Token)
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {
 		return UserName{}, err

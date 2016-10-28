@@ -7,10 +7,10 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// CheckToken checks if the token is valid.
-func CheckToken(app Application, token Token) (Status, error) {
+// CheckToken checks if the authToken is valid.
+func CheckToken(app Application, authToken AuthToken) (Status, error) {
 	var args fasthttp.Args
-	args.Add("token", token.Token)
+	args.Add("authToken", authToken.Token)
 	requestURL := fmt.Sprintf("%s/auth/valid/%s?%s", API, app.Name, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

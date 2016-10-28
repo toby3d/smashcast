@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"strconv"
-	"time"
 )
 
 type (
@@ -32,14 +31,14 @@ type (
 	Category struct {
 		ID         string    `json:"category_id"`
 		Name       string    `json:"category_name"`
-		NameShort  string    `json:"category_name_short,ommitempty"`
+		NameShort  string    `json:"category_name_short,omitempty"`
 		SEOKey     string    `json:"category_seo_key"`
 		Viewers    string    `json:"category_viewers"`
 		MediaCount string    `json:"category_media_count"`
-		Channels   string    `json:"category_channels,ommitempty"`
-		LogoSmall  string    `json:"category_logo_small,ommitempty"`
+		Channels   string    `json:"category_channels,omitempty"`
+		LogoSmall  string    `json:"category_logo_small,omitempty"`
 		LogoLarge  string    `json:"category_logo_large"`
-		Updated    time.Time `json:"category_updated"`
+		Updated    Timestamp `json:"category_updated"`
 	}
 )
 
