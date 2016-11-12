@@ -27,7 +27,7 @@ type (
 // Editors can read this API.
 func GetHosters(channel string, authToken AuthToken) (HostersList, error) {
 	var args fasthttp.Args
-	args.Add("authToken", authToken.Token)
+	args.Add("authToken", authToken.AuthToken)
 	requestURL := fmt.Sprintf("%s/hosters/%s?%s", API, channel, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {

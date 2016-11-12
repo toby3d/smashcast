@@ -23,22 +23,22 @@ type (
 
 	// ListGames is a response body about find games categories.
 	ListGames struct {
-		Request    Request    `json:"request"`
-		Categories []Category `json:"categories"`
+		Request    Request    `json:"request,omitempty"`
+		Categories []Category `json:"categories,omitempty"`
 	}
 
 	// Category is a game category information.
 	Category struct {
-		ID         string    `json:"category_id"`
-		Name       string    `json:"category_name"`
-		NameShort  string    `json:"category_name_short,omitempty"`
-		SEOKey     string    `json:"category_seo_key"`
-		Viewers    string    `json:"category_viewers"`
-		MediaCount string    `json:"category_media_count"`
-		Channels   string    `json:"category_channels,omitempty"`
-		LogoSmall  string    `json:"category_logo_small,omitempty"`
-		LogoLarge  string    `json:"category_logo_large"`
-		Updated    Timestamp `json:"category_updated"`
+		ID         string `json:"category_id,omitempty"`
+		Name       string `json:"category_name,omitempty"`
+		NameShort  string `json:"category_name_short,omitempty"`
+		SEOKey     string `json:"category_seo_key,omitempty"`
+		Viewers    string `json:"category_viewers,omitempty"`
+		MediaCount string `json:"category_media_count,omitempty"`
+		Channels   string `json:"category_channels,omitempty"`
+		LogoSmall  string `json:"category_logo_small,omitempty"`
+		LogoLarge  string `json:"category_logo_large,omitempty"`
+		Updated    string `json:"category_updated,omitempty"`
 	}
 )
 

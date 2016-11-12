@@ -6,9 +6,8 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// AuthToken is a Users Authentication Token
 type AuthToken struct {
-	Token `json:"authToken"`
+	AuthToken string `json:"authToken,omitempty"`
 }
 
 // GetToken get an authentication authToken rather than account information.
@@ -17,7 +16,7 @@ func GetToken(login string, pass string, app Application) (AuthToken, error) {
 	args.Add("login", login)
 	args.Add("pass", pass)
 	args.Add("app", app.Name)
-	statusCode, body, err := fasthttp.Post(nil, API+"/auth/authToken", args)
+	statusCode, body, err := fasthttp.Post(nil, API+"/auth/token", args)
 	if statusCode != 200 || err != nil {
 		return AuthToken{}, err
 	}

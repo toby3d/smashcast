@@ -14,7 +14,7 @@ type UserName struct {
 
 // GetUserFromToken returns user associated with authToken.
 func GetUserFromToken(authToken AuthToken) (UserName, error) {
-	requestURL := fmt.Sprintf("%s/userfromauthToken/%s", API, authToken.Token)
+	requestURL := fmt.Sprintf("%s/userfromauthToken/%s", API, authToken.AuthToken)
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {
 		return UserName{}, err

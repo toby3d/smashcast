@@ -1,5 +1,7 @@
 package hitGox
 
+import ()
+
 const (
 	// API is a URL for all API requests.
 	API = "https://api.hitbox.tv"
@@ -36,25 +38,6 @@ type (
 
 	// Request is a string about current request. Maybe can be used for logs.
 	Request struct {
-		This string `json:"this"`
-	}
-
-	Timestamp struct {
-		time.Time
-	}
-
-	// Token is a universal structure for AccessToken and AuthToken.
-	Token struct {
-		Token string
+		This string `json:"this,omitempty"`
 	}
 )
-
-// NewApplication create a new simple application object.
-func NewApplication(appName string, appToken string, appSecret string) Application {
-	app := Application{
-		Name:   name,
-		Token:  appToken,
-		Secret: secret,
-	}
-	return app
-}

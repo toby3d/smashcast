@@ -10,7 +10,7 @@ import (
 // CheckToken checks if the authToken is valid.
 func CheckToken(app Application, authToken AuthToken) (Status, error) {
 	var args fasthttp.Args
-	args.Add("authToken", authToken.Token)
+	args.Add("token", authToken.AuthToken)
 	requestURL := fmt.Sprintf("%s/auth/valid/%s?%s", API, app.Name, args.String())
 	_, body, err := fasthttp.Get(nil, requestURL)
 	if err != nil {
