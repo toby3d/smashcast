@@ -3,7 +3,7 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/valyala/fasthttp"
 )
 
@@ -35,12 +35,18 @@ type User struct {
 }
 
 // GetUserObject returns a regular response about user.
+//
+// When a user isn’t found, this API returns a regular response but with all values containing null.
 func GetUserObject(userName string, authToken string) (*User, error) {
+	if userName == "" {
+		return nil, errors.New("username can not be empty")
+	}
+
 	var args fasthttp.Args
 	args.Add("authToken", authToken)
 
-	url := fmt.Sprintf("%s/user/%s?%s", APIEndpoint, userName, args.String())
-	_, body, err := fasthttp.Get(nil, url)
+	url := APIEndpoint + "/user/" + userName
+	body, err := get(url, &args)
 	if err != nil {
 		return nil, err
 	}

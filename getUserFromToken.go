@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/valyala/fasthttp"
 )
 
 // UserName is about user username.
@@ -14,21 +12,25 @@ type UserName struct {
 }
 
 // GetUserFromToken returns user associated with authToken.
-func GetUserFromToken(authToken string) (*UserName, error) {
+func GetUserFromToken(authToken string) (*string, error) {
+	var uName string
+
 	if authToken == "" {
-		return nil, errors.New("this action requires a authtoken")
+		return &uName, errors.New("this action requires a authtoken")
 	}
 
-	url := fmt.Sprintf("%s/userfromtoken/%s", APIEndpoint, authToken)
-	_, resp, err := fasthttp.Get(nil, url)
+	url := APIEndpoint + "/userfromtoken/" + authToken
+	resp, err := get(url, nil)
 	if err != nil {
-		return nil, err
+		return &uName, err
 	}
 
 	var obj UserName
 	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
-		return nil, err
+		return &uName, err
 	}
 
-	return &obj, nil
+	uName = obj.UserName
+
+	return &uName, nil
 }

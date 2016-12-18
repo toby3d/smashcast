@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -18,7 +17,7 @@ type FollowingStatus struct {
 }
 
 // CheckFollowingStatus returns follower relationship from userName to channel.
-func CheckFollowingStatus(userName string, channel string) (*FollowingStatus, error) {
+func CheckFollowingStatus(channel string, userName string) (*FollowingStatus, error) {
 	switch {
 	case userName == "":
 		return nil, errors.New("username can not be empty")
@@ -29,8 +28,8 @@ func CheckFollowingStatus(userName string, channel string) (*FollowingStatus, er
 	var args fasthttp.Args
 	args.Add("user_name", userName)
 
-	url := fmt.Sprintf("%s/following/user/%s?%s", APIEndpoint, channel, args.String())
-	_, resp, err := fasthttp.Get(nil, url)
+	url := APIEndpoint + "/following/user/" + channel
+	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err
 	}

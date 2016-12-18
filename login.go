@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/valyala/fasthttp"
 )
 
 // Account is about authentication of user account.
@@ -51,14 +50,20 @@ func (app *Application) Login(login string, pass string, authToken string) (*Acc
 		return nil, errors.New("account details can not be empty")
 	}
 
-	var args fasthttp.Args
-	args.Add("app", app.Name)
-	args.Add("authToken", authToken)
-	args.Add("login", login)
-	args.Add("pass", pass)
+	var changes = struct {
+		Login     string `json:"login"`
+		Password  string `json:"pass"`
+		App       string `json:"app"`
+		AuthToken string `json:"authToken"`
+	}{login, pass, app.Name, authToken}
+
+	dst, err := json.Marshal(&changes)
+	if err != nil {
+		return nil, err
+	}
 
 	url := APIEndpoint + "/auth/login"
-	_, resp, err := fasthttp.Post(nil, url, &args)
+	resp, err := post(dst, url, nil)
 	if err != nil {
 		return nil, err
 	}

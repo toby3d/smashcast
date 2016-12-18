@@ -2,7 +2,6 @@ package hitGox
 
 import (
 	"errors"
-	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -18,8 +17,8 @@ func (app *Application) CheckToken(authToken string) (*Status, error) {
 	var args fasthttp.Args
 	args.Add("token", authToken)
 
-	url := fmt.Sprintf("%s/auth/valid/%s?%s", APIEndpoint, app.Name, args.String())
-	_, body, err := fasthttp.Get(nil, url)
+	url := APIEndpoint + "/auth/valid/" + app.Name
+	body, err := get(url, &args)
 	if err != nil {
 		return nil, err
 	}
