@@ -3,59 +3,70 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/valyala/fasthttp"
 )
 
-type (
-	// Account is a response body about current user account.
-	AccountInformation struct {
-		UserID            string `json:"user_id,omitempty"`
-		UserName          string `json:"user_name,omitempty"`
-		UserLogo          string `json:"user_logo,omitempty"`
-		UserLogoSmall     string `json:"user_logo_small,omitempty"`
-		UserBanned        string `json:"user_banned,omitempty"`
-		UserPartner       string `json:"user_partner,omitempty"`
-		UserBannedChannel string `json:"user_banned_channel,omitempty"`
-		SuperAdmin        string `json:"superadmin,omitempty"`
-		LivestreamCount   string `json:"livestream_count,omitempty"`
-		Followers         string `json:"followers,omitempty"`
-		AuthToken         string `json:"authToken,omitempty"`
-		Login             string `json:"login,omitempty"`
-		Data              Data   `json:"data"`
-		Access            string `json:"access,omitempty"`
-		App               string `json:"app,omitempty"`
+// Account is about authentication of user account.
+type Account struct {
+	Access    string `json:"access"`
+	App       string `json:"app"`
+	AuthToken string `json:"authToken"`
+	Data      struct {
+		App               string `json:"app"`
+		AuthToken         string `json:"authToken"`
+		Followers         string `json:"followers"`
+		LivestreamCount   string `json:"livestream_count"`
+		Login             string `json:"login"`
+		Superadmin        string `json:"superadmin"`
+		UserBanned        string `json:"user_banned"`
+		UserBannedChannel string `json:"user_banned_channel"`
+		UserID            string `json:"user_id"`
+		UserLogo          string `json:"user_logo"`
+		UserLogoSmall     string `json:"user_logo_small"`
+		UserName          string `json:"user_name"`
+		UserPartner       string `json:"user_partner"`
+	} `json:"data"`
+	Followers         string `json:"followers"`
+	LivestreamCount   string `json:"livestream_count"`
+	Login             string `json:"login"`
+	Superadmin        string `json:"superadmin"`
+	UserBanned        string `json:"user_banned"`
+	UserBannedChannel string `json:"user_banned_channel"`
+	UserID            string `json:"user_id"`
+	UserLogo          string `json:"user_logo"`
+	UserLogoSmall     string `json:"user_logo_small"`
+	UserName          string `json:"user_name"`
+	UserPartner       string `json:"user_partner"`
+}
+
+// Login authenticates and returns account information.
+func (app *Application) Login(login string, pass string, authToken string) (*Account, error) {
+	switch {
+	case app.Name == "":
+		return nil, errors.New("no name of application, create new application first")
+	case login == "" && pass == "" && authToken == "":
+		return nil, errors.New("empty details, use authtoken or login/pass")
+	case (login == "" || pass == "") && authToken == "":
+		return nil, errors.New("account details can not be empty")
 	}
 
-	// Data is a part Account response body about current user account.
-	Data struct {
-		UserID            string `json:"user_id,omitempty"`
-		UserName          string `json:"user_name,omitempty"`
-		UserLogo          string `json:"user_logo,omitempty"`
-		UserLogoSmall     string `json:"user_logo_small,omitempty"`
-		UserBanned        string `json:"user_banned,omitempty"`
-		UserPartner       string `json:"user_partner,omitempty"`
-		UserBannedChannel string `json:"user_banned_channel,omitempty"`
-		SuperAdmin        string `json:"superadmin,omitempty"`
-		LivestreamCount   string `json:"livestream_count,omitempty"`
-		Followers         string `json:"followers,omitempty"`
-		AuthToken         string `json:"authToken,omitempty"`
-		Login             string `json:"login,omitempty"`
-		App               string `json:"app,omitempty"`
-	}
-)
-
-// Login used for authentication by user login and password.
-func (authToken AuthToken) Login(app Application) (AccountInformation, error) {
-	args := fasthttp.AcquireArgs()
+	var args fasthttp.Args
 	args.Add("app", app.Name)
-	args.Add("authToken", authToken.AuthToken)
-	statusCode, body, err := fasthttp.Post(nil, API+"/auth/login", args)
-	if statusCode != 200 || err != nil {
-		return AccountInformation{}, err
+	args.Add("authToken", authToken)
+	args.Add("login", login)
+	args.Add("pass", pass)
+
+	url := APIEndpoint + "/auth/login"
+	_, resp, err := fasthttp.Post(nil, url, &args)
+	if err != nil {
+		return nil, err
 	}
-	var obj AccountInformation
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return AccountInformation{}, err
+
+	var obj Account
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+		return nil, err
 	}
-	return obj, nil
+
+	return &obj, nil
 }
