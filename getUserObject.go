@@ -7,51 +7,48 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// User contains information about user.
-type User struct {
-	Followers         string `json:"followers,omitempty"`
-	Videos            string `json:"videos,omitempty"`
-	Recordings        string `json:"recordings,omitempty"`
-	Teams             string `json:"teams,omitempty"`
-	UserID            string `json:"user_id,omitempty"`
-	UserName          string `json:"user_name,omitempty"`
-	UserStatus        string `json:"user_status,omitempty"`
-	UserLogo          string `json:"user_logo,omitempty"`
-	UserCover         string `json:"user_cover,omitempty"`
-	UserLogoSmall     string `json:"user_logo_small,omitempty"`
-	UserIsBroadcaster bool   `json:"user_is_broadcaster"`
-	UserEmail         string `json:"user_email,omitempty"`
-	UserPartner       string `json:"user_partner,omitempty"`
-	PartnerType       string `json:"partner_type,omitempty"`
-	UserBetaProfile   string `json:"user_beta_profile,omitempty"`
-	MediaIsLive       string `json:"media_is_live,omitempty"`
-	MediaLiveSince    string `json:"media_live_since,omitempty"`
-	UserMediaID       string `json:"user_media_id,omitempty"`
-	TwitterAccount    string `json:"twitter_account,omitempty"`
-	TwitterEnabled    string `json:"twitter_enabled,omitempty"`
-	LivestreamCount   string `json:"livestream_count,omitempty"`
-	TFAActive         string `json:"tfa_active,omitempty"`
-	IsLive            string `json:"is_live,omitempty"`
-	LiveSince         string `json:"live_since,omitempty"`
-}
-
-// GetUserObject return information about user.
+// User is about basic information about user.
 //
 // When a user isn’t found, this API returns a regular response but with all values containing null.
-func GetUserObject(userName UserName, authToken AuthToken) (User, error) {
+type User struct {
+	Followers       string `json:"followers"`
+	LivestreamCount string `json:"livestream_count"`
+	MediaIsLive     string `json:"media_is_live"`
+	MediaLiveSince  string `json:"media_live_since"`
+	PartnerType     string `json:"partner_type"`
+	Recordings      string `json:"recordings"`
+	Teams           string `json:"teams"`
+	TFAActive       string `json:"tfa_active"`
+	TwitterAccount  string `json:"twitter_account"`
+	TwitterEnabled  string `json:"twitter_enabled"`
+	UserBetaProfile string `json:"user_beta_profile"`
+	UserCover       string `json:"user_cover"`
+	UserEmail       string `json:"user_email"`
+	UserID          string `json:"user_id"`
+	UserLogo        string `json:"user_logo"`
+	UserLogoSmall   string `json:"user_logo_small"`
+	UserMediaID     string `json:"user_media_id"`
+	UserName        string `json:"user_name"`
+	UserPartner     string `json:"user_partner"`
+	UserStatus      string `json:"user_status"`
+	Videos          string `json:"videos"`
+}
+
+// GetUserObject returns a regular response about user.
+func GetUserObject(userName string, authToken string) (*User, error) {
 	var args fasthttp.Args
+	args.Add("authToken", authToken)
 
-	// Returns private user details.
-	args.Add("authToken", authToken.AuthToken)
-
-	requestURL := fmt.Sprintf("%s/user/%s?%s", API, userName.UserName, args.String())
-	_, body, err := fasthttp.Get(nil, requestURL)
+	url := fmt.Sprintf("%s/user/%s?%s", APIEndpoint, userName, args.String())
+	_, body, err := fasthttp.Get(nil, url)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
+
 	var obj User
 	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return User{}, err
+		return nil, err
 	}
-	return obj, nil
+
+	return &obj, nil
 }
