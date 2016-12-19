@@ -6,31 +6,24 @@ import (
 	"errors"
 )
 
-// UserName is about user username.
-type UserName struct {
-	UserName string `json:"user_name"`
-}
-
 // GetUserFromToken returns user associated with authToken.
-func GetUserFromToken(authToken string) (*string, error) {
-	var uName string
-
+func GetUserFromToken(authToken string) (string, error) {
 	if authToken == "" {
-		return &uName, errors.New("this action requires a authtoken")
+		return "", errors.New("authtoken can not be empty")
 	}
 
 	url := APIEndpoint + "/userfromtoken/" + authToken
 	resp, err := get(url, nil)
 	if err != nil {
-		return &uName, err
+		return "", err
 	}
 
-	var obj UserName
+	var obj = struct {
+		UserName string `json:"user_name"`
+	}{}
 	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
-		return &uName, err
+		return "", err
 	}
 
-	uName = obj.UserName
-
-	return &uName, nil
+	return obj.UserName, nil
 }
