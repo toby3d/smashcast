@@ -3,39 +3,43 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
-type (
-	// HostersList is a response body about hosters.
-	HostersList struct {
-		Hosters []Hoster `json:"hosters"`
-	}
-
-	// Hoster is a single list item about hoster.
-	Hoster struct {
-		UserName
+// HostersList contains information about hosted channels.
+type HostersList struct {
+	Hosters []struct {
 		UserLogo string `json:"user_logo"`
-	}
-)
+		UserName string `json:"user_name"`
+	} `json:"hosters"`
+}
 
-// GetHosters returns channel hosters.
-//
-// When a user isn’t found, this API returns a regular response but with all values containing null.
+// GetHosters returns a list of channels hosting channel.
 //
 // Editors can read this API.
-func GetHosters(channel string, authToken AuthToken) (HostersList, error) {
+func (account *Account) GetHosters(channel string) (*HostersList, error) {
+	switch {
+	case account.AuthToken == "":
+		return nil, errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return nil, errors.New("channel can not be empty")
+	}
+
 	var args fasthttp.Args
-	args.Add("authToken", authToken.AuthToken)
-	requestURL := fmt.Sprintf("%s/hosters/%s?%s", API, channel, args.String())
-	_, body, err := fasthttp.Get(nil, requestURL)
+	args.Add("authToken", account.AuthToken)
+
+	url := fmt.Sprint(APIEndpoint, "/hosters/", channel)
+	resp, err := get(url, &args)
 	if err != nil {
-		return HostersList{}, err
+		return nil, err
 	}
+
 	var obj HostersList
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return HostersList{}, err
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+		return nil, err
 	}
-	return obj, nil
+
+	return &obj, nil
 }
