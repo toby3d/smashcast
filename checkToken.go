@@ -1,6 +1,8 @@
 package hitGox
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"github.com/valyala/fasthttp"
 )
@@ -18,15 +20,15 @@ func (app *Application) CheckToken(authToken string) (*Status, error) {
 	args.Add("token", authToken)
 
 	url := APIEndpoint + "/auth/valid/" + app.Name
-	body, err := get(url, &args)
+	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	status, err := stupidFuckingStatusResponseByLazyAPIDevelopers(&body)
-	if err != nil {
+	var obj Status
+	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
 		return nil, err
 	}
 
-	return status, nil
+	return &obj, nil
 }
