@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // AccessToken is the equivalent of a regular authToken. You are now able to use this on the hitbox API just like any other token.
@@ -38,7 +39,7 @@ func (app *Application) Exchange(requestToken string) (*string, error) {
 		return nil, err
 	}
 
-	url := APIEndpoint + "/oauth/exchange"
+	url := fmt.Sprint(API, "/oauth/exchange")
 	resp, err := post(dst, url, nil)
 	if err != nil {
 		return &aToken, err

@@ -3,27 +3,33 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 )
 
-// LastCommercial is a response body about last commercial.
+// LastCommercial contains information about last commercial break.
 type LastCommercial struct {
-	SecondsAgo string `json:"seconds_ago"`
 	AdCount    string `json:"ad_count"`
-	TimeOut    int64  `json:"timeout"`
+	SecondsAgo string `json:"seconds_ago"`
+	Timeout    int    `json:"timeout"`
 }
 
 // GetLastCommercial returns last commercial break object.
-func GetLastCommercial(channel string) (LastCommercial, error) {
-	requestURL := fmt.Sprintf("%s/ws/combreak/%s", API, channel)
-	_, body, err := fasthttp.Get(nil, requestURL)
+func GetLastCommercial(channel string) (*LastCommercial, error) {
+	if channel == "" {
+		return nil, errors.New("channel can not be empty")
+	}
+
+	url := fmt.Sprint(API, "/ws/combreak/", channel)
+	resp, err := get(url, nil)
 	if err != nil {
-		return LastCommercial{}, err
+		return nil, err
 	}
+
 	var obj LastCommercial
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return LastCommercial{}, err
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+		return nil, err
 	}
-	return obj, nil
+
+	return &obj, nil
 }

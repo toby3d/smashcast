@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -31,7 +32,7 @@ func (account *Account) FollowAChannel(id string) (*Status, error) {
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
 
-	url := APIEndpoint + "/follow"
+	url := fmt.Sprint(API, "/follow")
 	resp, err := post(dst, url, &args)
 	if err != nil {
 		return nil, err

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -43,7 +44,7 @@ func (account *Account) CreateOAuthApplication(name string, redirectURI string) 
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
 
-	url := APIEndpoint + "/oauthapps/" + account.UserName
+	url := fmt.Sprint(API, "/oauthapps/", account.UserName)
 	resp, err := post(dst, url, &args)
 	if err != nil {
 		return nil, err

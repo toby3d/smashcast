@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -28,7 +29,7 @@ func CheckFollowingStatus(channel string, userName string) (*FollowingStatus, er
 	var args fasthttp.Args
 	args.Add("user_name", userName)
 
-	url := APIEndpoint + "/following/user/" + channel
+	url := fmt.Sprint(API, "/following/user/", channel)
 	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err

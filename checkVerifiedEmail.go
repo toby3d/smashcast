@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // VerifiedStatus is about validated user email address.
@@ -24,7 +25,7 @@ func CheckVerifiedEmail(userName string) (*VerifiedStatus, error) {
 		return nil, errors.New("username can not be empty")
 	}
 
-	url := APIEndpoint + "/user/checkVerifiedEmail/" + userName
+	url := fmt.Sprint(API, "/user/checkVerifiedEmail/", userName)
 	resp, err := get(url, nil)
 	if err != nil {
 		return nil, err

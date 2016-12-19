@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // AccessLevels is about permissions of user on channel.
@@ -42,7 +43,7 @@ func (account *Account) GetUserAccessLevels(channel string) (*AccessLevels, erro
 		return nil, errors.New("channel can not be empty")
 	}
 
-	url := APIEndpoint + "/user/access/" + channel + "/" + account.AuthToken
+	url := fmt.Sprint(API, "/user/access/", channel, "/", account.AuthToken)
 	resp, err := get(url, nil)
 	if err != nil {
 		return nil, err

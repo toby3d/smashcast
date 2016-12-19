@@ -4,24 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
-// AuthToken is about generated key for most actions by user.
-type AuthToken struct {
-	AuthToken string `json:"authToken"`
-}
-
-// GetToken can be used alternatively to just get an authentication token rather than account information.
-func (app *Application) GetToken(login string, pass string) (*string, error) {
-	var aToken string
-
+// GetToken return authentication token rather than account information.
+func (app *Application) GetToken(login string, pass string) (string, error) {
 	switch {
 	case app.Name == "":
-		return &aToken, errors.New("no name of application, create new application first")
+		return "", errors.New("no name of application, create new application first")
 	case login == "":
-		return &aToken, errors.New("login can not be empty")
+		return "", errors.New("login can not be empty")
 	case pass == "":
-		return &aToken, errors.New("pass can not be empty")
+		return "", errors.New("pass can not be empty")
 	}
 
 	var changes = struct {
@@ -32,21 +26,21 @@ func (app *Application) GetToken(login string, pass string) (*string, error) {
 
 	dst, err := json.Marshal(changes)
 	if err != nil {
-		return &aToken, err
+		return "", err
 	}
 
-	url := APIEndpoint + "/auth/token"
+	url := fmt.Sprint(API, "/auth/token")
 	resp, err := post(dst, url, nil)
 	if err != nil {
-		return &aToken, err
+		return "", err
 	}
 
-	var obj AuthToken
+	var obj = struct {
+		AuthToken string `json:"authToken"`
+	}{}
 	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
-		return &aToken, err
+		return "", err
 	}
 
-	aToken = obj.AuthToken
-
-	return &aToken, nil
+	return obj.AuthToken, nil
 }

@@ -3,64 +3,59 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"strconv"
 )
 
-type (
-	// ListRequest is filters for searching by game categories.
-	ListRequest struct {
-		// Search keyword for category_name.
-		Query string
-
-		// Maximum number of objects to fetch. Default and maximum is 100.
-		Limit int
-
-		// Return only games that have live channels.
-		LiveOnly bool
-	}
-
-	// ListGames is a response body about find games categories.
-	ListGames struct {
-		Request    Request    `json:"request,omitempty"`
-		Categories []Category `json:"categories,omitempty"`
-	}
-
-	// Category is a game category information.
-	Category struct {
-		ID         string `json:"category_id,omitempty"`
-		Name       string `json:"category_name,omitempty"`
-		NameShort  string `json:"category_name_short,omitempty"`
-		SEOKey     string `json:"category_seo_key,omitempty"`
-		Viewers    string `json:"category_viewers,omitempty"`
-		MediaCount string `json:"category_media_count,omitempty"`
-		Channels   string `json:"category_channels,omitempty"`
-		LogoSmall  string `json:"category_logo_small,omitempty"`
-		LogoLarge  string `json:"category_logo_large,omitempty"`
-		Updated    string `json:"category_updated,omitempty"`
-	}
-)
+// ListGames contains search results by games.
+type ListGames struct {
+	Request struct {
+		This string `json:"this"`
+	} `json:"request"`
+	Categories []struct {
+		CategoryID         string `json:"category_id"`
+		CategoryName       string `json:"category_name"`
+		CategoryNameShort  string `json:"category_name_short"`
+		CategorySeoKey     string `json:"category_seo_key"`
+		CategoryViewers    string `json:"category_viewers"`
+		CategoryMediaCount string `json:"category_media_count"`
+		CategoryChannels   string `json:"category_channels"`
+		CategoryLogoSmall  string `json:"category_logo_small"`
+		CategoryLogoLarge  string `json:"category_logo_large"`
+		CategoryUpdated    string `json:"category_updated"`
+	} `json:"categories"`
+}
 
 // GetListGames returns a list games sorted by the number of viewers.
-func GetListGames(req ListRequest) (ListGames, error) {
-	var args fasthttp.Args
-	if req.Query != "" {
-		args.Add("q", req.Query)
+func GetListGames(query string, limit int, liveOnly bool) (*ListGames, error) {
+	if limit <= 0 || limit > 100 {
+		return nil, errors.New("limit must be > 0 and <= 100")
 	}
-	if req.Limit > 0 && req.Limit <= 100 {
-		args.Add("limit", strconv.Itoa(req.Limit))
-	}
-	args.Add("liveonly", strconv.FormatBool(req.LiveOnly))
 
-	requestURL := fmt.Sprintf("%s/games?%s", API, args.String())
-	_, body, err := fasthttp.Get(nil, requestURL)
+	var args fasthttp.Args
+	switch {
+	case query != "":
+		args.Add("q", query)
+		fallthrough
+	case limit > 0 && limit <= 100:
+		args.Add("limit", strconv.Itoa(limit))
+		fallthrough
+	default:
+		args.Add("liveonly", strconv.FormatBool(liveOnly))
+	}
+
+	url := fmt.Sprint(API, "/games")
+	resp, err := get(url, &args)
 	if err != nil {
-		return ListGames{}, err
+		return nil, err
 	}
+
 	var obj ListGames
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return ListGames{}, err
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+		return nil, err
 	}
-	return obj, nil
+
+	return &obj, nil
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -21,7 +22,7 @@ func (account *Account) UnfollowAChannel(id string) (*Status, error) {
 	args.Add("follow_id", id)
 	args.Add("type", "user")
 
-	url := APIEndpoint + "/follow"
+	url := fmt.Sprint(API, "/follow")
 	resp, err := delete(url, &args)
 	if err != nil {
 		return nil, err

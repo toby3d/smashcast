@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -19,7 +20,7 @@ func (app *Application) CheckToken(authToken string) (*Status, error) {
 	var args fasthttp.Args
 	args.Add("token", authToken)
 
-	url := APIEndpoint + "/auth/valid/" + app.Name
+	url := fmt.Sprint(API, "/auth/valid/", app.Name)
 	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err

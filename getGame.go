@@ -47,7 +47,7 @@ func GetGame(game interface{}) (*Game, error) {
 	var args fasthttp.Args
 	args.Add("seo", strconv.FormatBool(seo))
 
-	url := fmt.Sprint(APIEndpoint, "/game/", game)
+	url := fmt.Sprint(API, "/game/", game)
 	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err

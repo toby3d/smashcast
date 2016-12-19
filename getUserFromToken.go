@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // GetUserFromToken returns user associated with authToken.
@@ -12,7 +13,7 @@ func GetUserFromToken(authToken string) (string, error) {
 		return "", errors.New("authtoken can not be empty")
 	}
 
-	url := APIEndpoint + "/userfromtoken/" + authToken
+	url := fmt.Sprint(API, "/userfromtoken/", authToken)
 	resp, err := get(url, nil)
 	if err != nil {
 		return "", err

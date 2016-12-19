@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
@@ -21,7 +22,7 @@ func (account *Account) ResetStreamKey(channel string) (string, error) {
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
 
-	url := APIEndpoint + "/mediakey/" + channel
+	url := fmt.Sprint(API, "/mediakey/", channel)
 	resp, err := put(nil, url, &args)
 	if err != nil {
 		return "", err

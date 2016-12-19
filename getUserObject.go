@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 )
 
 // User is about basic information about user.
-//
-// When a user isn’t found, this API returns a regular response but with all values containing null.
 type User struct {
 	Followers       string `json:"followers"`
 	LivestreamCount string `json:"livestream_count"`
@@ -43,9 +42,11 @@ func GetUserObject(userName string, authToken string) (*User, error) {
 	}
 
 	var args fasthttp.Args
-	args.Add("authToken", authToken)
+	if authToken != "" {
+		args.Add("authToken", authToken)
+	}
 
-	url := APIEndpoint + "/user/" + userName
+	url := fmt.Sprint(API, "/user/", userName)
 	body, err := get(url, &args)
 	if err != nil {
 		return nil, err

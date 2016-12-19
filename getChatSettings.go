@@ -8,18 +8,18 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// HostersList contains information about hosted channels.
-type HostersList struct {
-	Hosters []struct {
-		UserLogo string `json:"user_logo"`
-		UserName string `json:"user_name"`
-	} `json:"hosters"`
+// ChatSettings containing information about channel chat.
+type ChatSettings struct {
+	UserID     string   `json:"user_id"`
+	SubImages  bool     `json:"sub_images"`
+	Whisper    bool     `json:"whisper"`
+	IgnoreList []string `json:"ignore_list"`
 }
 
-// GetHosters returns a list of channels hosting channel.
+// GetChatSettings returns chat settings for channel.
 //
-// Editors can read this API.
-func (account *Account) GetHosters(channel string) (*HostersList, error) {
+// Moderators and Editors can view this API.
+func (account *Account) GetChatSettings(channel string) (*ChatSettings, error) {
 	switch {
 	case account.AuthToken == "":
 		return nil, errors.New("authtoken in account can not be empty")
@@ -30,13 +30,13 @@ func (account *Account) GetHosters(channel string) (*HostersList, error) {
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
 
-	url := fmt.Sprint(API, "/hosters/", channel)
+	url := fmt.Sprint(API, "/chat/settings/", channel)
 	resp, err := get(url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	var obj HostersList
+	var obj ChatSettings
 	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
 		return nil, err
 	}
