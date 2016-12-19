@@ -3,27 +3,36 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/valyala/fasthttp"
 )
 
-// StreamKey is a key for authenticate streaming programm.
-type StreamKey struct {
-	StreamKey string `json:"streamKey"`
-}
-
 // GetStreamKey get the stream key for channel.
-func GetStreamKey(channel string, authToken AuthToken) (StreamKey, error) {
+//
+// Editors can read this API.
+func (account *Account) GetStreamKey(channel string) (string, error) {
+	switch {
+	case account.AuthToken == "":
+		return "", errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return "", errors.New("channel can not be empty")
+	}
+
 	var args fasthttp.Args
-	args.Add("authToken", authToken.AuthToken)
-	requestURL := fmt.Sprintf("%s/mediakey/%s?%s", API, channel, args.String())
-	_, body, err := fasthttp.Get(nil, requestURL)
+	args.Add("authToken", account.AuthToken)
+
+	url := APIEndpoint + "/mediakey/" + channel
+	resp, err := get(url, &args)
 	if err != nil {
-		return StreamKey{}, err
+		return "", err
 	}
-	var obj StreamKey
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
-		return StreamKey{}, err
+
+	var obj = struct {
+		StreamKey string `json:"streamKey"`
+	}{}
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+		return "", err
 	}
-	return obj, nil
+
+	return obj.StreamKey, nil
 }
