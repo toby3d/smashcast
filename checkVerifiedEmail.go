@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/valyala/fasthttp"
 )
 
 // VerifiedStatus is about validated user email address.
@@ -26,8 +24,8 @@ func CheckVerifiedEmail(userName string) (*VerifiedStatus, error) {
 		return nil, errors.New("username can not be empty")
 	}
 
-	url := fmt.Sprintf("%s/user/checkVerifiedEmail/%s", APIEndpoint, userName)
-	_, resp, err := fasthttp.Get(nil, url)
+	url := APIEndpoint + "/user/checkVerifiedEmail/" + userName
+	resp, err := get(url, nil)
 	if err != nil {
 		return nil, err
 	}
