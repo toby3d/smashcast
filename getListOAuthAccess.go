@@ -3,6 +3,7 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
 )
@@ -17,6 +18,10 @@ type ListOAuthAccess struct {
 
 // GetListOAuthAccess returns OAuth Applications the user has authenticated with.
 func (account *Account) GetListOAuthAccess() (*ListOAuthAccess, error) {
+	if err := checkGetListOAuthAccess(account); err != nil {
+		return nil, err
+	}
+
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
 
@@ -32,4 +37,14 @@ func (account *Account) GetListOAuthAccess() (*ListOAuthAccess, error) {
 	}
 
 	return &obj, nil
+}
+
+func checkGetListOAuthAccess(account *Account) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case account.UserName == "":
+		return errors.New("username in account can not be empty")
+	}
+	return nil
 }

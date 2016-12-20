@@ -20,11 +20,8 @@ type HostersList struct {
 //
 // Editors can read this API.
 func (account *Account) GetHosters(channel string) (*HostersList, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case channel == "":
-		return nil, errors.New("channel can not be empty")
+	if err := checkGetHosters(account, channel); err != nil {
+		return nil, err
 	}
 
 	var args fasthttp.Args
@@ -42,4 +39,14 @@ func (account *Account) GetHosters(channel string) (*HostersList, error) {
 	}
 
 	return &obj, nil
+}
+
+func checkGetHosters(account *Account, channel string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }

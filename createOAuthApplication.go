@@ -1,7 +1,6 @@
 package hitGox
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,15 +9,8 @@ import (
 
 // CreateOAuthApplication creates a OAuth Application.
 func (account *Account) CreateOAuthApplication(name string, redirectURI string) (*Status, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case account.UserName == "":
-		return nil, errors.New("username in account can not be empty")
-	case name == "":
-		return nil, errors.New("appname can not be empty")
-	case redirectURI == "":
-		return nil, errors.New("appredirecturi can not be empty")
+	if err := checkCreateOAuthApplication(account, name, redirectURI); err != nil {
+		return nil, err
 	}
 
 	var changes = struct {
@@ -28,11 +20,10 @@ func (account *Account) CreateOAuthApplication(name string, redirectURI string) 
 			Name        string `json:"app_name"`
 			RedirectURI string `json:"app_redirect_uri"`
 		} `json:"app"`
-	}{
-		AuthToken: account.AuthToken,
-		UserName:  account.UserName,
-	}
+	}{}
 
+	changes.AuthToken = account.AuthToken
+	changes.UserName = account.UserName
 	changes.App.Name = name
 	changes.App.RedirectURI = redirectURI
 
@@ -50,10 +41,24 @@ func (account *Account) CreateOAuthApplication(name string, redirectURI string) 
 		return nil, err
 	}
 
-	var obj Status
-	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+	status, err := fuckYouNeedDecodeStatusFirst(resp)
+	if err != nil {
 		return nil, err
 	}
 
-	return &obj, nil
+	return status, nil
+}
+
+func checkCreateOAuthApplication(account *Account, name string, redirectURI string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case account.UserName == "":
+		return errors.New("username in account can not be empty")
+	case name == "":
+		return errors.New("name can not be empty")
+	case redirectURI == "":
+		return errors.New("redirecturi can not be empty")
+	}
+	return nil
 }

@@ -11,11 +11,8 @@ import (
 //
 // Editors can modify this API, except the whisper setting.
 func (account *Account) UpdateChatSettings(channel string, subImages bool, whisper bool) (*Status, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case channel == "":
-		return nil, errors.New("channel can not be empty")
+	if err := checkUpdateChatSettings(account, channel); err != nil {
+		return nil, err
 	}
 
 	var changes = struct {
@@ -44,4 +41,14 @@ func (account *Account) UpdateChatSettings(channel string, subImages bool, whisp
 	}
 
 	return status, nil
+}
+
+func checkUpdateChatSettings(account *Account, channel string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }

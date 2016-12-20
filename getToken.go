@@ -9,13 +9,8 @@ import (
 
 // GetToken return authentication token rather than account information.
 func (app *Application) GetToken(login string, pass string) (string, error) {
-	switch {
-	case app.Name == "":
-		return "", errors.New("no name of application, create new application first")
-	case login == "":
-		return "", errors.New("login can not be empty")
-	case pass == "":
-		return "", errors.New("pass can not be empty")
+	if err := checkGetToken(app, login, pass); err != nil {
+		return "", err
 	}
 
 	var changes = struct {
@@ -43,4 +38,16 @@ func (app *Application) GetToken(login string, pass string) (string, error) {
 	}
 
 	return obj.AuthToken, nil
+}
+
+func checkGetToken(app *Application, login string, pass string) error {
+	switch {
+	case app.Name == "":
+		return errors.New("no name of application, create new application first")
+	case login == "":
+		return errors.New("login can not be empty")
+	case pass == "":
+		return errors.New("pass can not be empty")
+	}
+	return nil
 }

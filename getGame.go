@@ -31,7 +31,6 @@ type Game struct {
 // GetGame return information about game category.
 func GetGame(game interface{}) (*Game, error) {
 	var seo bool
-
 	switch game.(type) {
 	case string:
 		if game == "" {

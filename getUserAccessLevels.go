@@ -34,13 +34,10 @@ type AccessLevels struct {
 
 // GetUserAccessLevels return access levels that auth has in channel.
 //
-// If you have never been granted Moderator or Editor in channel, this API will only return isSubscriber and isFollower
+// If you have never been granted Moderator or Editor in channel, this API will only return IsSubscriber and IsFollower.
 func (account *Account) GetUserAccessLevels(channel string) (*AccessLevels, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case channel == "":
-		return nil, errors.New("channel can not be empty")
+	if err := checkGetUserAccessLevels(account, channel); err != nil {
+		return nil, err
 	}
 
 	url := fmt.Sprint(API, "/user/access/", channel, "/", account.AuthToken)
@@ -55,4 +52,14 @@ func (account *Account) GetUserAccessLevels(channel string) (*AccessLevels, erro
 	}
 
 	return &obj, nil
+}
+
+func checkGetUserAccessLevels(account *Account, channel string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }

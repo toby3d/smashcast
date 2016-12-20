@@ -19,11 +19,8 @@ type FollowingStatus struct {
 
 // CheckFollowingStatus returns follower relationship from userName to channel.
 func CheckFollowingStatus(channel string, userName string) (*FollowingStatus, error) {
-	switch {
-	case userName == "":
-		return nil, errors.New("username can not be empty")
-	case channel == "":
-		return nil, errors.New("channel can not be empty")
+	if err := checkCheckFollowingStatus(channel, userName); err != nil {
+		return nil, err
 	}
 
 	var args fasthttp.Args
@@ -41,4 +38,14 @@ func CheckFollowingStatus(channel string, userName string) (*FollowingStatus, er
 	}
 
 	return &obj, nil
+}
+
+func checkCheckFollowingStatus(channel string, userName string) error {
+	switch {
+	case userName == "":
+		return errors.New("username can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }

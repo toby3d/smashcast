@@ -12,11 +12,8 @@ import (
 //
 // Editors can read this API.
 func (account *Account) GetStreamKey(channel string) (string, error) {
-	switch {
-	case account.AuthToken == "":
-		return "", errors.New("authtoken in account can not be empty")
-	case channel == "":
-		return "", errors.New("channel can not be empty")
+	if err := checkGetStreamKey(account, channel); err != nil {
+		return "", err
 	}
 
 	var args fasthttp.Args
@@ -36,4 +33,14 @@ func (account *Account) GetStreamKey(channel string) (string, error) {
 	}
 
 	return obj.StreamKey, nil
+}
+
+func checkGetStreamKey(account *Account, channel string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }

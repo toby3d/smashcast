@@ -1,8 +1,6 @@
 package hitGox
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
@@ -10,11 +8,8 @@ import (
 
 // CheckToken checks if the Token is valid.
 func (app *Application) CheckToken(authToken string) (*Status, error) {
-	switch {
-	case app.Name == "":
-		return nil, errors.New("no name of application, create new application first")
-	case authToken == "":
-		return nil, errors.New("authtoken can not be empty")
+	if err := checkCheckToken(app, authToken); err != nil {
+		return nil, err
 	}
 
 	var args fasthttp.Args
@@ -26,10 +21,20 @@ func (app *Application) CheckToken(authToken string) (*Status, error) {
 		return nil, err
 	}
 
-	var obj Status
-	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+	status, err := fuckYouNeedDecodeStatusFirst(resp)
+	if err != nil {
 		return nil, err
 	}
 
-	return &obj, nil
+	return status, nil
+}
+
+func checkCheckToken(app *Application, authToken string) error {
+	switch {
+	case app.Name == "":
+		return errors.New("no name of application, create new application first")
+	case authToken == "":
+		return errors.New("authtoken can not be empty")
+	}
+	return nil
 }

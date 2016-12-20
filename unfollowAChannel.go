@@ -1,25 +1,28 @@
 package hitGox
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
+	"strconv"
 )
 
 // UnfollowAChannel removes follower relationship for user id (aka channel).
-func (account *Account) UnfollowAChannel(id string) (*Status, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case id == "":
-		return nil, errors.New("id can not be empty")
+func (account *Account) UnfollowAChannel(id interface{}) (*Status, error) {
+	if err := checkUnfollowAChannel(account, id); err != nil {
+		return nil, err
 	}
 
 	var args fasthttp.Args
 	args.Add("authToken", account.AuthToken)
-	args.Add("follow_id", id)
+	switch i := id.(type) {
+	case int:
+		args.Add("follow_id", strconv.Itoa(i))
+	case string:
+		args.Add("follow_id", i)
+	default:
+		return nil, errors.New("id can be only as string or int")
+	}
 	args.Add("type", "user")
 
 	url := fmt.Sprint(API, "/follow")
@@ -28,10 +31,20 @@ func (account *Account) UnfollowAChannel(id string) (*Status, error) {
 		return nil, err
 	}
 
-	var obj Status
-	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+	status, err := fuckYouNeedDecodeStatusFirst(resp)
+	if err != nil {
 		return nil, err
 	}
 
-	return &obj, nil
+	return status, nil
+}
+
+func checkUnfollowAChannel(account *Account, id interface{}) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case id == nil:
+		return errors.New("id can not be empty")
+	}
+	return nil
 }

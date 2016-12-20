@@ -1,6 +1,8 @@
 package hitGox
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/valyala/fasthttp"
 )
 
@@ -15,23 +17,12 @@ const (
 type (
 	// Status is a response body about successful or corrupted requests.
 	Status struct {
-		Success bool `json:"success"`
-		Error   bool `json:"error"`
-
-		// Used in: CreateTeam, AcceptTeamInvite, LeaveFromTeam.
-		SuccessMessage string `json:"success_msg,omitempty"`
-
-		// Used in: CheckToken, GetStreamKey, ResetStreamKey, RunCommercialBreak, GetEditorsList, EditEditor, GetEditorList, GetHosters, GetLiveMedia, GetVideo, CreateVideo, CreateTeam, LeaveFromTeam, EditModerator, UpdateChatSettings.
-		ErrorMessage string `json:"error_msg,omitempty"`
-
-		// Used in: UpdateUserObject, SetDefaultTeam, EditEditor, SendTwitterPost, SendFacebookPost, FollowAChannel, UnfollowAChannel, EditModerator, UpdateChatSettings, UpdateWhisperSetting, UpdateUserAvatar, RemoveDescriptionImage.
-		Message string `json:"message,omitempty"`
-
-		// Used only in CheckToken function if token is valid.
-		MSG string `json:"msg,omitempty"`
+		Success bool
+		Error   bool
+		Message string
 	}
 
-	// Application is simple structure about hitbox app.
+	// Application is simple structure of hitbox OAuth Application for authenticate actions.
 	Application struct {
 		Name   string
 		Token  string
@@ -41,12 +32,12 @@ type (
 
 // NewApplication create Application structure for functions based on this.
 func NewApplication(appName string, appToken string, appSecret string) *Application {
-	application := &Application{
+	app := &Application{
 		Name:   appName,
 		Token:  appToken,
 		Secret: appSecret,
 	}
-	return application
+	return app
 }
 
 func get(url string, args *fasthttp.Args) ([]byte, error) {
@@ -65,8 +56,8 @@ func delete(url string, args *fasthttp.Args) ([]byte, error) {
 	return request("DELETE", nil, url, args)
 }
 
-func update(dst []byte, url string, args *fasthttp.Args) ([]byte, error) {
-	return request("UPDATE", dst, url, args)
+func update(url string, args *fasthttp.Args) ([]byte, error) {
+	return request("UPDATE", nil, url, args)
 }
 
 func request(method string, dst []byte, url string, args *fasthttp.Args) ([]byte, error) {
@@ -90,4 +81,32 @@ func request(method string, dst []byte, url string, args *fasthttp.Args) ([]byte
 	}
 
 	return resp.Body(), nil
+}
+
+func fuckYouNeedDecodeStatusFirst(ass []byte) (*Status, error) {
+	var shit = struct {
+		Success        bool   `json:"success"`
+		Error          bool   `json:"error"`
+		SuccessMessage string `json:"success_msg,omitempty"`
+		ErrorMessage   string `json:"error_msg,omitempty"`
+		ShortMessage   string `json:"msg,omitempty"`
+		Message        string `json:"message,omitempty"`
+	}{}
+	if err := json.NewDecoder(bytes.NewReader(ass)).Decode(&shit); err != nil {
+		return nil, err
+	}
+
+	var msg string
+	switch {
+	case shit.SuccessMessage != "":
+		msg = shit.SuccessMessage
+	case shit.ErrorMessage != "":
+		msg = shit.ErrorMessage
+	case shit.ShortMessage != "":
+		msg = shit.ShortMessage
+	case shit.Message != "":
+		msg = shit.Message
+	}
+
+	return &Status{shit.Success, shit.Error, msg}, nil
 }

@@ -1,7 +1,6 @@
 package hitGox
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -38,12 +37,12 @@ func (account *Account) CreateTeam(name string, displayName string, text string)
 		return nil, err
 	}
 
-	var obj Status
-	if err := json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
+	status, err := fuckYouNeedDecodeStatusFirst(resp)
+	if err != nil {
 		return nil, err
 	}
 
-	return &obj, nil
+	return status, nil
 }
 
 func checkCreateTeam(account *Account, name string, displayName string, text string) error {

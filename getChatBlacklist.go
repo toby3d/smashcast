@@ -3,22 +3,26 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 )
 
 // GetChatBlacklist returns the word blacklist for channel’s chat
-func GetChatBlacklist(channel string) (*[]string, error) {
+func GetChatBlacklist(channel string) ([]string, error) {
+	if channel == "" {
+		return nil, errors.New("channel can not be empty")
+	}
+
 	url := fmt.Sprint(API, "/chat/blacklist/", channel)
-	_, body, err := fasthttp.Get(nil, url)
+	resp, err := get(url, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var obj []string
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&obj); err != nil {
+	if err = json.NewDecoder(bytes.NewReader(resp)).Decode(&obj); err != nil {
 		return nil, err
 	}
 
-	return &obj, nil
+	return obj, nil
 }

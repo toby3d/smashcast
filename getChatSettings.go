@@ -20,11 +20,8 @@ type ChatSettings struct {
 //
 // Moderators and Editors can view this API.
 func (account *Account) GetChatSettings(channel string) (*ChatSettings, error) {
-	switch {
-	case account.AuthToken == "":
-		return nil, errors.New("authtoken in account can not be empty")
-	case channel == "":
-		return nil, errors.New("channel can not be empty")
+	if err := checkGetChatSettings(account, channel); err != nil {
+		return nil, err
 	}
 
 	var args fasthttp.Args
@@ -42,4 +39,14 @@ func (account *Account) GetChatSettings(channel string) (*ChatSettings, error) {
 	}
 
 	return &obj, nil
+}
+
+func checkGetChatSettings(account *Account, channel string) error {
+	switch {
+	case account.AuthToken == "":
+		return errors.New("authtoken in account can not be empty")
+	case channel == "":
+		return errors.New("channel can not be empty")
+	}
+	return nil
 }
