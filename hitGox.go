@@ -3,41 +3,23 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/valyala/fasthttp"
 )
 
 const (
-	// API is a URL for all API requests.
-	API = "https://api.hitbox.tv"
+	// APIEndpoint is a URL for all API requests.
+	APIEndpoint = "https://api.hitbox.tv/%s"
 
-	// ImagesHost is a URL for all images resources.
-	ImagesHost = "https://edge.sf.hitbox.tv"
+	// ImagesEndpoint is a URL for all images resources.
+	ImagesEndpoint = "https://edge.sf.hitbox.tv/%s"
 )
 
-type (
-	// Status is a response body about successful or corrupted requests.
-	Status struct {
-		Success bool
-		Error   bool
-		Message string
-	}
-
-	// Application is simple structure of hitbox OAuth Application for authenticate actions.
-	Application struct {
-		Name   string
-		Token  string
-		Secret string
-	}
-)
-
-// NewApplication create Application structure for functions based on this.
-func NewApplication(appName string, appToken string, appSecret string) *Application {
-	app := &Application{
-		Name:   appName,
-		Token:  appToken,
-		Secret: appSecret,
-	}
-	return app
+// Status is a response body about successful or corrupted requests.
+type Status struct {
+	Success bool
+	Error   bool
+	Message string
 }
 
 func get(url string, args *fasthttp.Args) ([]byte, error) {
@@ -80,11 +62,15 @@ func request(method string, dst []byte, url string, args *fasthttp.Args) ([]byte
 		return nil, err
 	}
 
+	if resp.StatusCode() != 200 {
+		return nil, errors.New(fixStatus(resp.Body()).Message)
+	}
+
 	return resp.Body(), nil
 }
 
-func fuckYouNeedDecodeStatusFirst(ass []byte) (*Status, error) {
-	var shit = struct {
+func fixStatus(resp []byte) *Status {
+	var obj = struct {
 		Success        bool   `json:"success"`
 		Error          bool   `json:"error"`
 		SuccessMessage string `json:"success_msg,omitempty"`
@@ -92,21 +78,23 @@ func fuckYouNeedDecodeStatusFirst(ass []byte) (*Status, error) {
 		ShortMessage   string `json:"msg,omitempty"`
 		Message        string `json:"message,omitempty"`
 	}{}
-	if err := json.NewDecoder(bytes.NewReader(ass)).Decode(&shit); err != nil {
-		return nil, err
-	}
+	json.NewDecoder(bytes.NewReader(resp)).Decode(&obj)
 
 	var msg string
 	switch {
-	case shit.SuccessMessage != "":
-		msg = shit.SuccessMessage
-	case shit.ErrorMessage != "":
-		msg = shit.ErrorMessage
-	case shit.ShortMessage != "":
-		msg = shit.ShortMessage
-	case shit.Message != "":
-		msg = shit.Message
+	case obj.SuccessMessage != "":
+		msg = obj.SuccessMessage
+	case obj.ErrorMessage != "":
+		msg = obj.ErrorMessage
+	case obj.ShortMessage != "":
+		msg = obj.ShortMessage
+	case obj.Message != "":
+		msg = obj.Message
 	}
 
-	return &Status{shit.Success, shit.Error, msg}, nil
+	return &Status{
+		Success: obj.Success,
+		Error:   obj.Error,
+		Message: msg,
+	}
 }
