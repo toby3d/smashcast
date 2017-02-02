@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // Ingest is a single list element about streaming server for programs.
@@ -15,7 +17,7 @@ type Ingest []struct {
 // Ingests returns a list of servers for live stream ingesting.
 func Ingests() (Ingest, error) {
 	url := fmt.Sprintf(APIEndpoint, "ingests/default_list")
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

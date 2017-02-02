@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // FeaturedMedia is about featured live stream.
@@ -18,7 +20,7 @@ type FeaturedMedia struct {
 // GetFeaturedMedia returns a featured live stream.
 func GetFeaturedMedia() (*FeaturedMedia, error) {
 	url := fmt.Sprintf(APIEndpoint, "mediafeatured")
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

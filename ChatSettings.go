@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // ChatSettings containing information about channel chat.
@@ -19,11 +21,11 @@ type ChatSettings struct {
 //
 // Moderators and Editors can view this API.
 func (account *Account) GetChatSettings(channel string) (*ChatSettings, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("chat/settings/", channel))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

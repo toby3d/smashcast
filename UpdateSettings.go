@@ -3,13 +3,15 @@ package hitGox
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // UpdateChatSettings update chat settings for channel.
 //
 // Editors can modify this API, except the whisper setting.
-func (account *Account) UpdateChatSettings(channel string, subImages bool, whisper bool) (*Status, error) {
+func (account *Account) UpdateChatSettings(channel string, subImages, whisper bool) (*just.Status, error) {
 	var changes = struct {
 		UserID    string `json:"user_id"`
 		SubImages bool   `json:"sub_images"`
@@ -21,14 +23,14 @@ func (account *Account) UpdateChatSettings(channel string, subImages bool, whisp
 		return nil, err
 	}
 
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("chat/settings/", channel))
-	resp, err := post(dst, url, &args)
+	resp, err := just.POST(dst, url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

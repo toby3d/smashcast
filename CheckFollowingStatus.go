@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // FollowingStatus is about follower relationship.
@@ -18,11 +20,11 @@ type FollowingStatus struct {
 
 // CheckFollowingStatus returns follower relationship from userName to channel.
 func CheckFollowingStatus(channel string, userName string) (*FollowingStatus, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("user_name", userName)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("following/user/", channel))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

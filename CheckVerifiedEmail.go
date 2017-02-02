@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // VerifiedStatus is about validated user email address.
@@ -21,7 +23,7 @@ type VerifiedStatus struct {
 // CheckVerifiedEmail check if user has validated their email address.
 func CheckVerifiedEmail(userName string) (*VerifiedStatus, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("user/checkVerifiedEmail/", userName))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

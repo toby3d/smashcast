@@ -3,29 +3,25 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"strconv"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // Game is about category of streams.
 type Game struct {
-	Request struct {
-		This string `json:"this"`
-	} `json:"request"`
-	Category struct {
-		CategoryID         string `json:"category_id"`
-		CategoryName       string `json:"category_name"`
-		CategoryNameShort  string `json:"category_name_short"`
-		CategorySeoKey     string `json:"category_seo_key"`
-		CategoryViewers    string `json:"category_viewers"`
-		CategoryMediaCount string `json:"category_media_count"`
-		CategoryChannels   string `json:"category_channels"`
-		CategoryLogoSmall  string `json:"category_logo_small"`
-		CategoryLogoLarge  string `json:"category_logo_large"`
-		CategoryUpdated    string `json:"category_updated"`
-	} `json:"category"`
+	ID         string `json:"category_id"`
+	Name       string `json:"category_name"`
+	NameShort  string `json:"category_name_short"`
+	SeoKey     string `json:"category_seo_key"`
+	Viewers    string `json:"category_viewers"`
+	MediaCount string `json:"category_media_count"`
+	Channels   string `json:"category_channels"`
+	LogoSmall  string `json:"category_logo_small"`
+	LogoLarge  string `json:"category_logo_large"`
+	Updated    string `json:"category_updated"`
 }
 
 // GetGame return information about game category.
@@ -37,20 +33,25 @@ func GetGame(game interface{}) (*Game, error) {
 	case int:
 		seo = false
 	default:
-		return nil, errors.New("game mast be only as string or int")
+		return nil, fmt.Errorf("game mast be only as string or int")
 	}
 
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("seo", strconv.FormatBool(seo))
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("game/", game))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	var obj Game
+	var obj = struct {
+		Request struct {
+			This string `json:"this"`
+		} `json:"request"`
+		Game `json:"category"`
+	}{}
 	json.NewDecoder(bytes.NewReader(resp)).Decode(&obj)
 
-	return &obj, nil
+	return &obj.Game, nil
 }

@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // GetChatColors get valid chat colors you can use.
 func GetChatColors() ([]string, error) {
 	url := fmt.Sprintf(APIEndpoint, "chat/colors")
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

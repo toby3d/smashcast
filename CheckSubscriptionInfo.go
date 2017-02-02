@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // SubscriptionInfo is about user subscription status.
@@ -28,11 +30,11 @@ type SubscriptionInfo struct {
 
 // CheckSubscriptionInfo retruns subscription information between :channel and :user
 func (account *Account) CheckSubscriptionInfo(user string) (*SubscriptionInfo, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("subscription/", account.UserName, "/", user))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

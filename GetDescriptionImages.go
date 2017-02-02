@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // DescriptionImage is a single element of list abot uploaded description image.
@@ -16,7 +18,7 @@ type DescriptionImage []struct {
 // GetDescriptionImages gets description images.
 func (account *Account) GetDescriptionImages() (DescriptionImage, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("upload/description/", account.UserName, "/", account.AuthToken))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

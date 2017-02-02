@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // GetToken return authentication token rather than account information.
@@ -20,7 +22,7 @@ func (app *OAuthApplication) GetToken(login string, pass string) (string, error)
 	}
 
 	url := fmt.Sprintf(APIEndpoint, "auth/token")
-	resp, err := post(dst, url, nil)
+	resp, err := just.POST(dst, url, nil)
 	if err != nil {
 		return "", err
 	}

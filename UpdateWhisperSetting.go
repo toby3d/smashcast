@@ -2,12 +2,14 @@ package hitGox
 
 import (
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
-// CheckFollowingStatus returns follower relationship from userName to channel.
-func (account *Account) UpdateWhisperSetting(whisper bool) (*Status, error) {
-	var args fasthttp.Args
+// CheckFollowingjust.Status returns follower relationship from userName to channel.
+func (account *Account) UpdateWhisperSetting(whisper bool) (*just.Status, error) {
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	var allow string
@@ -18,10 +20,10 @@ func (account *Account) UpdateWhisperSetting(whisper bool) (*Status, error) {
 	}
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("chat/pm/", allow))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

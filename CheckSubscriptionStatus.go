@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
-// CheckSubscriptionStatus rReturns subscription relationship between channel and auth.
+// CheckSubscriptionStatus returns subscription relationship between channel and auth.
 func (account *Account) CheckSubscriptionStatus(channel string) (bool, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("user/subscription/", channel, "/", account.AuthToken))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return false, err
 	}

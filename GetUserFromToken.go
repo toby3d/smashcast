@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // GetUserFromToken returns user associated with authToken.
 func GetUserFromToken(authToken string) (string, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("userfromtoken/", authToken))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return "", err
 	}

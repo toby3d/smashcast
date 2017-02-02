@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // AccessLevels is about permissions of user on channel.
@@ -36,7 +38,7 @@ type AccessLevels struct {
 // If you have never been granted Moderator or Editor in channel, this API will only return IsSubscriber and IsFollower.
 func (account *Account) GetUserAccessLevels(channel string) (*AccessLevels, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("user/access/", channel, "/", account.AuthToken))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

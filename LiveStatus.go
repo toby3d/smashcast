@@ -4,18 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
-// LiveStatus contains info about live status of channel.
+// Livejust.Status contains info about live status of channel.
 type LiveStatus struct {
 	MediaIsLive string `json:"media_is_live"`
 	MediaViews  string `json:"media_views"`
 }
 
-// GetLiveStatus Returns media status and viewer count for channel.
+// GetLivejust.Status Returns media status and viewer count for channel.
 func GetLiveStatus(channel string) (*LiveStatus, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("media/status/", channel))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

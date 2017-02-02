@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // Exchange the exchange request_token for an authToken once the user is redirected.
@@ -25,7 +27,7 @@ func (app *OAuthApplication) Exchange(requestToken string) (string, error) {
 	}
 
 	url := fmt.Sprintf(APIEndpoint, "oauth/exchange")
-	resp, err := post(dst, url, nil)
+	resp, err := just.POST(dst, url, nil)
 	if err != nil {
 		return "", err
 	}

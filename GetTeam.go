@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"strconv"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // Team is about group information.
@@ -47,8 +49,8 @@ type Team struct {
 }
 
 // GetTeam returns a team object for team.
-func GetTeam(team string, media bool, mediaType string, liveOnly bool, partner bool) (*Team, error) {
-	var args fasthttp.Args
+func GetTeam(team, mediaType string, media, liveOnly, partner bool) (*Team, error) {
+	var args f.Args
 	switch {
 	case media:
 		args.Add("media", strconv.FormatBool(media))
@@ -64,7 +66,7 @@ func GetTeam(team string, media bool, mediaType string, liveOnly bool, partner b
 	}
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("/team/", team))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

@@ -4,18 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // ResetStreamKey sets a new stream key for channel.
 //
 // Editors can run this API.
 func (account *Account) ResetStreamKey(channel string) (string, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("mediakey/", channel))
-	resp, err := put(nil, url, &args)
+	resp, err := just.PUT(nil, url, &args)
 	if err != nil {
 		return "", err
 	}

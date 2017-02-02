@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // User is about basic information about user.
@@ -35,14 +37,14 @@ type User struct {
 // GetUserObject returns a regular response about user.
 //
 // When a user isn’t found, this API returns a regular response but with all values containing null.
-func GetUserObject(userName string, authToken string) (*User, error) {
-	var args fasthttp.Args
+func GetUserObject(userName, authToken string) (*User, error) {
+	var args f.Args
 	if authToken != "" {
 		args.Add("authToken", authToken)
 	}
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("user/", userName))
-	body, err := get(url, &args)
+	body, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

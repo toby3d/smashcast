@@ -3,15 +3,16 @@ package hitGox
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // GetTotalViews returns Total Media Views for channel.
 func GetTotalViews(channel string) (int, error) {
-	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("/media/views/", channel))
-	resp, err := get(url, nil)
+	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("media/views/", channel))
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return 0, err
 	}
@@ -31,6 +32,6 @@ func GetTotalViews(channel string) (int, error) {
 	case bool:
 		return 0, nil
 	default:
-		return 0, errors.New("invalid response format")
+		return 0, fmt.Errorf("invalid response format")
 	}
 }

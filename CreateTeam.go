@@ -3,13 +3,15 @@ package hitGox
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // CreateTeam creates a team object.
 //
 // displayName must match dame except casing.
-func (account *Account) CreateTeam(name string, displayName string, text string) (*Status, error) {
+func (account *Account) CreateTeam(name string, displayName string, text string) (*just.Status, error) {
 	var changes = struct {
 		AuthToken        string `json:"authToken"`
 		GroupUserName    string `json:"group_user_name"`
@@ -23,14 +25,14 @@ func (account *Account) CreateTeam(name string, displayName string, text string)
 		return nil, err
 	}
 
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, "team")
-	resp, err := post(dst, url, &args)
+	resp, err := just.POST(dst, url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

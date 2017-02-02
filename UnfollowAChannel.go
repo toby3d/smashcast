@@ -1,15 +1,16 @@
 package hitGox
 
 import (
-	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"strconv"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // UnfollowAChannel removes follower relationship for user id (aka channel).
-func (account *Account) UnfollowAChannel(id interface{}) (*Status, error) {
-	var args fasthttp.Args
+func (account *Account) UnfollowAChannel(id interface{}) (*just.Status, error) {
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 	switch i := id.(type) {
 	case int:
@@ -17,15 +18,15 @@ func (account *Account) UnfollowAChannel(id interface{}) (*Status, error) {
 	case string:
 		args.Add("follow_id", i)
 	default:
-		return nil, errors.New("id can be only as string or int")
+		return nil, fmt.Errorf("id can be only as string or int")
 	}
 	args.Add("type", "user")
 
-	url := fmt.Sprintf(APIEndpoint, "/follow")
-	resp, err := delete(url, &args)
+	url := fmt.Sprintf(APIEndpoint, "follow")
+	resp, err := just.DELETE(url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

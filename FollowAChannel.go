@@ -2,16 +2,17 @@ package hitGox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"strconv"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // FollowAChannel follows a channel.
 //
 // id can be either a username or user_id of a user you want to follow.
-func (account *Account) FollowAChannel(id interface{}) (*Status, error) {
+func (account *Account) FollowAChannel(id interface{}) (*just.Status, error) {
 	var changes = struct {
 		Type     string `json:"type"`
 		FollowID string `json:"follow_id"`
@@ -23,7 +24,7 @@ func (account *Account) FollowAChannel(id interface{}) (*Status, error) {
 	case string:
 		changes.FollowID = i
 	default:
-		return nil, errors.New("id can be only as string or int")
+		return nil, fmt.Errorf("id can be only as string or int")
 	}
 
 	dst, err := json.Marshal(changes)
@@ -31,14 +32,14 @@ func (account *Account) FollowAChannel(id interface{}) (*Status, error) {
 		return nil, err
 	}
 
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, "follow")
-	resp, err := post(dst, url, &args)
+	resp, err := just.POST(dst, url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

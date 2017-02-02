@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	just "github.com/toby3d/hitGox/tools"
 )
 
 // LastCommercial contains information about last commercial break.
@@ -16,7 +18,7 @@ type LastCommercial struct {
 // GetLastCommercial returns last commercial break object.
 func GetLastCommercial(channel string) (*LastCommercial, error) {
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("ws/combreak/", channel))
-	resp, err := get(url, nil)
+	resp, err := just.GET(url, nil)
 	if err != nil {
 		return nil, err
 	}

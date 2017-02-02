@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 type (
@@ -26,11 +28,11 @@ type (
 )
 
 func (acc *Account) GetListOAuthApplications() (*ListOAuthApplications, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", acc.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("oauthapps/", acc.UserName))
-	resp, err := get(url, &args)
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}

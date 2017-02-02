@@ -3,11 +3,13 @@ package hitGox
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // CreateOAuthApplication creates a OAuth Application.
-func (account *Account) CreateOAuthApplication(name string, redirectURI string) (*Status, error) {
+func (account *Account) CreateOAuthApplication(name string, redirectURI string) (*just.Status, error) {
 	var changes = struct {
 		AuthToken string `json:"authToken"`
 		UserName  string `json:"user_name"`
@@ -27,14 +29,14 @@ func (account *Account) CreateOAuthApplication(name string, redirectURI string) 
 		return nil, err
 	}
 
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
 	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("oauthapps/", account.UserName))
-	resp, err := post(dst, url, &args)
+	resp, err := just.POST(dst, url, &args)
 	if err != nil {
 		return nil, err
 	}
 
-	return fixStatus(resp), nil
+	return just.FixStatus(resp), nil
 }

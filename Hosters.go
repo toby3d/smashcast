@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/valyala/fasthttp"
+
+	just "github.com/toby3d/hitGox/tools"
+	f "github.com/valyala/fasthttp"
 )
 
 // HostersList contains information about hosted channels.
@@ -19,11 +21,11 @@ type HostersList struct {
 //
 // Editors can read this API.
 func (account *Account) GetHosters(channel string) (*HostersList, error) {
-	var args fasthttp.Args
+	var args f.Args
 	args.Add("authToken", account.AuthToken)
 
-	url := fmt.Sprintf(APIEndpoint, "/hosters/"+channel)
-	resp, err := get(url, &args)
+	url := fmt.Sprintf(APIEndpoint, fmt.Sprint("hosters/", channel))
+	resp, err := just.GET(url, &args)
 	if err != nil {
 		return nil, err
 	}
