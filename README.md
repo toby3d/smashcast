@@ -1,4 +1,5 @@
 # go-smashcast [![discord](https://discordapp.com/api/guilds/208605007744860163/widget.png)](https://discord.gg/We46FD4)
+## [Repo moved to GitLab](https://gitlab.com/toby3d/smashcast)
 
 [![License](https://img.shields.io/npm/l/express.svg?maxAge=2592000)](LICENSE.md)
 [![Build Status](https://travis-ci.org/toby3d/go-smashcast.svg)](https://travis-ci.org/toby3d/go-smashcast)
